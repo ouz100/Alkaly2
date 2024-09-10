@@ -7,22 +7,31 @@ class JeemaCoder extends React.Component {
       emailInput: "",
       telephoneInput: "",
       coders: [],
-      editIndex: null
+      editIndex: null, // Utilisé pour savoir si nous modifions un codeur
     };
     this.handleClick = this.handleClick.bind(this);
   }
 
   handleClick() {
-    // pour gérer le clic du bouton
     const newCoder = {
       prenom: this.state.prenomInput,
       nom: this.state.nomInput,
       email: this.state.emailInput,
       telephone: this.state.telephoneInput,
     };
-    // ajouter un nouveau codeur
-    this.setState({ coders: [newCoder, ...this.state.coders] });
-    // vider le formulaire
+
+    if (this.state.editIndex !== null) {
+      //  modifie un codeur 
+      const updatedCoders = [...this.state.coders];
+      updatedCoders[this.state.editIndex] = newCoder; // Mettre à jour le cdr
+      this.setState({
+        coders: updatedCoders,
+        editIndex: null, 
+      });
+    } else {
+      this.setState({ coders: [newCoder, ...this.state.coders] });
+    }
+
     this.setState({
       prenomInput: "",
       nomInput: "",
@@ -32,14 +41,14 @@ class JeemaCoder extends React.Component {
   }
 
   handleEdit(index) {
-    const coder = this.state.coders[index]
+    const coder = this.state.coders[index];
     this.setState({
       prenomInput: coder.prenom,
       nomInput: coder.nom,
       emailInput: coder.email,
       telephoneInput: coder.telephone,
-      // editIndex: index
-      })
+      editIndex: index, //  stocke l'index du cdr à mdfier 
+    });
   }
 
   render() {
@@ -97,18 +106,19 @@ class JeemaCoder extends React.Component {
                 />
               </div>
             </div>
+
             <button
               onClick={this.handleClick}
               className="btn btn-outline-primary w-100 mt-3"
             >
-              Submit
+              {this.state.editIndex !== null ? "Update" : "Submit"}
             </button>
-            
           </div>
         </div>
+
         <div className="mt-5 container">
           <h3 className="text-center">Coders</h3>
-          <table class="table">
+          <table className="table">
             <thead>
               <tr>
                 <th scope="col">Prenom</th>
@@ -121,19 +131,19 @@ class JeemaCoder extends React.Component {
             <tbody>
               {this.state.coders.map((coder, index) => {
                 return (
-                  <tr>
+                  <tr key={index}>
                     <td>{coder.prenom}</td>
                     <td>{coder.nom}</td>
                     <td>{coder.email}</td>
                     <td>{coder.telephone}</td>
                     <td>
-                      <button className= " btn btn-outline-warning" 
-                      onClick={ () => this.handleEdit(index )}
+                      <button
+                        className="btn btn-outline-warning"
+                        onClick={() => this.handleEdit(index)}
                       >
-                      Modifier
+                        Modifier
                       </button>
                     </td>
-
                   </tr>
                 );
               })}
@@ -146,4 +156,4 @@ class JeemaCoder extends React.Component {
 }
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<JeemaCoder />);
+root.render(<JeemaCoder />);
